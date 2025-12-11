@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warren Buffett 10-K Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #3498db, #2ecc71, #e74c3c);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        input, select {
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+            background: #f8f9fa;
+            display: none;
+        }
+
+        .result h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .summary {
+            white-space: pre-wrap;
+            line-height: 1.7;
+            color: #34495e;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .audio-controls h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        audio {
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #faddd7;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .loading {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+            padding: 20px;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Warren Buffett 10-K Analyzer</h1>
+        <p class="subtitle">Get AI-powered insights on company filings, summarized in the style of Warren Buffett</p>
+
+        <form id="analyzeForm">
+            <div class="form-group">
+                <label for="ticker">Stock Ticker Symbol</label>
+                <input type="text" id="ticker" placeholder="e.g., AAPL, GOOGL, MSFT" required>
+            </div>
+
+            <div class="form-group">
+                <label for="section">Section to Analyze</label>
+                <select id="section" required>
+                    <option value="">Choose a section</option>
+                    <option value="business">Business Overview</option>
+                    <option value="risk factors">Risk Factors</option>
+                    <option value="management's discussion and analysis">Management's Discussion and Analysis</option>
+                    <option value="quantitative and qualitative disclosures">Quantitative and Qualitative Disclosures</option>
+                    <option value="financial statements">Financial Statements</option>
+                </select>
+            </div>
+
+            <button type="submit">Analyze Filing</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('analyzeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const ticker = document.getElementById('ticker').value.toUpperCase().trim();
+            const section = document.getElementById('section').value;
+
+            if (!ticker || !section) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading">Analyzing the latest 10-K filing...</div>';
+
+            try {
+                const response = await fetch(`/analyze/10k/${ticker}/${encodeURIComponent(section)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    const audioUrl = `data:audio/wav;base64,${data.audio_data}`;
+                    resultDiv.innerHTML = `
+                        <div class="result">
+                            <h3>${data.ticker} - ${data.section.charAt(0).toUpperCase() + data.section.slice(1)}</h3>
+                            <div class="summary">${data.summary}</div>
+                            <div class="audio-controls">
+                                <h4>🎧 Listen to Summary</h4>
+                                <audio controls>
+                                    <source src="${audioUrl}" type="audio/wav">
+                                    Your browser does not support audio playback.
+                                </audio>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">An error occurred while analyzing the filing. Please try again.</div>';
+            }
+        });
+    </script>
+</body>
+</html>

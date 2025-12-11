@@ -4,10 +4,18 @@ A Flask application that analyzes 10-K filings using AI (Gemini) in the style of
 
 ## Features
 
+- **Beautiful Web Interface**: User-friendly frontend for easy analysis
 - Fetch latest 10-K filings from SEC for a given stock ticker
 - Extract key sections (Business, Risk Factors, MD&A, etc.)
 - Summarize sections using Google Gemini AI as Warren Buffett
 - Generate text-to-speech audio of the summaries
+
+## Getting Started
+
+1. Visit the root URL (`/`) in your browser to access the web interface
+2. Enter a stock ticker symbol (e.g., AAPL)
+3. Select a section to analyze
+4. Get an AI-powered summary with audio playback
 
 ## API Endpoint
 
@@ -30,10 +38,17 @@ Response:
 
 ## Setup
 
-1. Clone the repository
+1. Clone the repository: `git clone <repo-url>`
 2. Install dependencies: `pip install -r requirements.txt`
-3. Set environment variable: `GOOGLE_API_KEY=your_api_key`
+3. Copy `.env.example` to `.env` and set `GOOGLE_API_KEY`
 4. Run: `flask run` (dev) or use Docker
+
+## GitHub Setup
+
+To push to GitHub:
+1. Create a new repository on GitHub
+2. Add remote: `git remote add origin <repo-url>`
+3. Push: `git push -u origin master`
 
 ## Deployment
 

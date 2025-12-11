@@ -1,7 +1,7 @@
 import os
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, jsonify, send_file
+from flask import Flask, jsonify, send_file, request, render_template
 from google import genai
 from google.genai import types
 import re
@@ -97,6 +97,10 @@ def analyze_with_gemini(section_name, section_text):
         contents=prompt
     )
     return response.text
+
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 @app.route("/analyze/10k/<ticker>/<section>")
 def analyze_10k(ticker, section):
