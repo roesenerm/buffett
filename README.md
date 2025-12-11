@@ -40,7 +40,10 @@ Response:
 
 1. Clone the repository: `git clone <repo-url>`
 2. Install dependencies: `pip install -r requirements.txt`
-3. Copy `.env.example` to `.env` and set `GOOGLE_API_KEY`
+3. **Set up Google API Key:**
+   - Copy `.env.example` to `.env`: `cp .env.example .env`
+   - Get your Google AI API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Edit `.env` and set: `GOOGLE_API_KEY=your_actual_api_key_here`
 4. Run: `flask run` (dev) or use Docker
 
 ## GitHub Setup

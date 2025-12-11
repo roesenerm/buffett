@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, jsonify, send_file, request, render_template
@@ -8,6 +9,9 @@ import re
 import uuid
 import base64
 import io
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
